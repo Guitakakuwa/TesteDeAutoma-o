@@ -1,9 +1,7 @@
 
-import org.apache.poi.sl.usermodel.PictureData;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xslf.usermodel.XSLFPictureData;
-import org.apache.poi.xslf.usermodel.XSLFPictureShape;
 import org.apache.poi.xslf.usermodel.XSLFSlide;
 
 
@@ -19,19 +17,23 @@ import java.io.*;
 public class app {
 
     public static void main(String[] args) {
-        boolean primeiraVez = true;
+        XMLSlideShow ppt = new XMLSlideShow();
+        CriarPpt();
+//        boolean primeiraVez = true;
+//
         File fotoRuim = new File("Evidencia.png");
         String dir = System.getProperty("user.dir");
-        File resized = new File(dir + "\\Evidencias\\EvidenciaResized.png");
+
         for (int i = 0; i < 5; i++) {
-            // seria uma variavel de hambiente?
             TirarFoto(dir, i);
+            File resized = new File(dir + "\\Evidencias\\EvidenciaResized"+i+".png");
+            createSlide(resized, ppt);
+
         }
-        CreateDirectory();
 
 
-//        System.out.println(dir);
-//        CriarPpt(resized);
+//        CreateDirectory();
+
 
     }
 
@@ -62,65 +64,51 @@ public class app {
             BufferedImage screenFullImage = robot.createScreenCapture(captureRect);
             ImageIO.write(screenFullImage, format, new File(fileName));
 
-            resize(dir + "\\Evidencia.png", dir + "\\Evidencias\\EvidenciaResized" + num + ".png", 640, 480);
+            resize(dir + "\\Evidencia.png", dir + "\\Evidencias\\EvidenciaResized" + num + ".png", 1280, 720);
             System.out.println("Evidencia criada com sucesso");
 
 
         } catch (AWTException | IOException ex) {
             System.err.println(ex);
         }
-
     }
+        public static void createSlide (File nomeFoto, XMLSlideShow ppt){
+            XSLFSlide slide = ppt.createSlide();
+            //converting it into a byte array
+            byte[] picture = new byte[0];
+            try {
+                picture = IOUtils.toByteArray(new FileInputStream(nomeFoto));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            //adding the image to the presentation
+            XSLFPictureData idx = ppt.addPicture(picture, XSLFPictureData.PictureType.PNG);
+
+            //creating a slide with given picture on it
+            slide.createPicture(idx);
+            File file = new File("Evicendias.pptx");
+            FileOutputStream out = null;
+            try {
+                out = new FileOutputStream(file);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            //saving the changes to a file
+            try {
+                ppt.write(out);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println("image added successfully");
+
+        }
 
     public static void CriarPpt() {
-            XMLSlideShow ppt = new XMLSlideShow();
-
-    }
-
-    public static void InserirImagemNoPpt(String path, File nomeFoto) {
-
-        XMLSlideShow ppt = null;
-        try {
-            ppt = new XMLSlideShow(new FileInputStream(path));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        XSLFSlide slide = ppt.createSlide();
-        //converting it into a byte array
-        byte[] picture = new byte[0];
-        try {
-            picture = IOUtils.toByteArray(new FileInputStream(nomeFoto));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //adding the image to the presentation
-        XSLFPictureData idx = ppt.addPicture(picture, XSLFPictureData.PictureType.PNG);
-
-        //creating a slide with given picture on it
-        slide.createPicture(idx);
-
         //creating a file object
-        File file = new File("Evicendias.pptx");
-        FileOutputStream out = null;
-        try {
-            out = new FileOutputStream(file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        XMLSlideShow ppt = new XMLSlideShow();
 
-        //saving the changes to a file
-        try {
-            ppt.write(out);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println("image added successfully");
-        try {
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public static void resize(String inputImagePath,

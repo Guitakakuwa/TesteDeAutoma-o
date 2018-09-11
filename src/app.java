@@ -19,8 +19,7 @@ public class app {
     public static void main(String[] args) {
         XMLSlideShow ppt = new XMLSlideShow();
         CriarPpt();
-//        boolean primeiraVez = true;
-//
+
         File fotoRuim = new File("Evidencia.png");
         String dir = System.getProperty("user.dir");
 
@@ -32,7 +31,6 @@ public class app {
         }
 
 
-//        CreateDirectory();
 
 
     }
